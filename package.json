@@ -1,0 +1,20 @@
+{
+  "name": "fso-backend",
+  "version": "1.0.0",
+  "description": "This repository is meant to store code for Part 3 and Part 4 of the [Full Stack Open](https://fullstackopen.com/en/) course",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gerald Ho",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
