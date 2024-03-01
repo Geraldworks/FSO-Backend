@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors")
 const app = express();
 
 // Create the logger
@@ -25,6 +26,7 @@ const customLogger = morgan((tokens, req, res) => {
 });
 
 // Middleware
+app.use(cors())
 app.use(express.json());
 app.use(customLogger);
 
