@@ -5,7 +5,6 @@ const cors = require("cors");
 
 // This will require the module from the file,
 const PhoneNumber = require("./models/phoneNumber");
-const phoneNumber = require("./models/phoneNumber");
 
 const app = express();
 
@@ -77,11 +76,6 @@ app.post("/api/persons", (request, response) => {
       error: "number missing",
     });
   }
-  else if (persons.find((person) => person.name === content.name)) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
 
   const person = new PhoneNumber({
     name: content.name,
@@ -94,7 +88,6 @@ app.post("/api/persons", (request, response) => {
 
 app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
-  console.log(body)
   const phoneNumber = {
     name: body.name,
     number: body.number,
@@ -108,7 +101,7 @@ app.put("/api/persons/:id", (request, response, next) => {
 });
 
 // DELETE single Person
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   PhoneNumber.findByIdAndDelete(request.params.id)
     .then((result) => {
       response.status(204).end();
