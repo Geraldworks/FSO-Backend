@@ -1,10 +1,14 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
-const cors = require("cors")
+const cors = require("cors");
+
+// This will require the module from the file,
+const PhoneNumber = require("./models/phoneNumber");
+
 const app = express();
 
-// Create the logger
-const logger = morgan("tiny");
+// const logger = morgan("tiny");
 
 // Custom logger
 const customLogger = morgan((tokens, req, res) => {
@@ -26,50 +30,55 @@ const customLogger = morgan((tokens, req, res) => {
 });
 
 // Middleware
-app.use(express.static('dist'))
-app.use(cors())
+app.use(express.static("dist"));
+app.use(cors());
 app.use(express.json());
 app.use(customLogger);
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+// let persons = [
+//   {
+//     id: 1,
+//     name: "Arto Hellas",
+//     number: "040-123456",
+//   },
+//   {
+//     id: 2,
+//     name: "Ada Lovelace",
+//     number: "39-44-5323523",
+//   },
+//   {
+//     id: 3,
+//     name: "Dan Abramov",
+//     number: "12-43-234345",
+//   },
+//   {
+//     id: 4,
+//     name: "Mary Poppendieck",
+//     number: "39-23-6423122",
+//   },
+// ];
 
 // GET info
+
 app.get("/info", (request, response) => {
-  response.send(
-    `
-    <p>Phonebook has info for ${persons.length} people</p>
+  PhoneNumber.find({}).then((result) => {
+    response.send(
+      `
+    <p>Phonebook has info for ${result.length} people</p>
     <p>${new Date()}</p>
     `
-  );
+    );
+  });
 });
 
 // GET all Persons
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  PhoneNumber.find({}).then((result) => {
+    response.json(result);
+  });
 });
 
-// GET single Person
+// GET single Person (TBC)
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((person) => person.id === id);
@@ -93,23 +102,23 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({
       error: "number missing",
     });
-  } else if (persons.find((person) => person.name === content.name)) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
+  } 
+  // else if (persons.find((person) => person.name === content.name)) {
+  //   return response.status(400).json({
+  //     error: "name must be unique",
+  //   });
+  // }
 
-  const id = Math.floor(Math.random() * 1e9) + 1;
-  const person = {
-    id: id,
+  const person = new PhoneNumber({
     name: content.name,
     number: content.number,
-  };
-  persons = persons.concat(person);
-  response.json(person);
+  });
+  person.save().then((savedPerson) => {
+    response.json(savedPerson)
+  })
 });
 
-// DELETE single Person
+// DELETE single Person (TBC)
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
@@ -123,7 +132,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
